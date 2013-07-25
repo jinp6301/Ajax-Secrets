@@ -4,7 +4,7 @@ AjaxDemo::Application.routes.draw do
   resource :session
   resources :users do
     resources :secrets
-    resource :friendship, only: [:create]
+    resource :friendship, only: [:create, :destroy]
   end
 
 end

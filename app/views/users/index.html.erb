@@ -1,32 +1,58 @@
 <% @users.each do |user| %>
-<form id="user1form">
+
+<div class="userform <%= user.friends.include?(current_user) ? "friended" : "unfriended" %>">
+<form action="<%= user_friendship_url(user.id) %>" method="post">
   <label for="friend"><%= user.username %></label>
-  <input type="hidden" name="friendship[user_id]" value="<%= current_user.id %>">
-  <input type="hidden" name="friendship[friend_id]" value="<%= user.id %>">
-  <input type="submit" value="Friend">
+  <input type="submit" value="Friend" class="friend">
 </form>
+<form action="<%= user_friendship_url(user.id) %>">
+  <input type="submit" value="Unfriend" class="unfriend">
+</form>
+</div>
+<br>
 <% end %>
 
 <p>
 
 <script>
-  $("#user1form").find('input[type="submit"]').on(
-  "click",
-  function (event) {
-    event.preventDefault();
-    $(this).attr('disabled','disabled');
-    $(this).attr('value','Friending...');
-    $(this).fadeTo(400, 0.5)
-    var formData = $(this.form).serialize();
-    var that = this;
-    $.ajax({
-      url: "<%= user_friendship_url(current_user.id) %>",
-      type: "POST",
-      data: formData,
-      success: function () {
-        $(that).attr('value','Friended');
-      }
-    });
-  }
+$(".userform").on("click", "input[class='friend']", undefined, function(event){
+  event.preventDefault();
+  $(this).attr('disabled','disabled');
+  $(this).attr('value','Friending...');
+  var formData = $(this.form).serialize();
+  var that = this;
+  $.ajax({
+    url: that.form.action,
+    type: 'POST',
+    data: formData,
+    success: function () {
+      $(that).attr('value','Friended');
+      $(that).closest("div[class='userform unfriended']").toggleClass('friended');
+      $(that).closest("div[class='userform unfriended friended']").toggleClass('unfriended');
+      $(that).removeAttr('disabled');
+      $(that).attr('value','Friend');
+    }
+  });
+}
+);
+$(".userform").on("click", "input[class='unfriend']", undefined, function(event){
+  event.preventDefault();
+  $(this).attr('disabled','disabled');
+  $(this).attr('value','Unfriending...');
+  var formData = $(this.form).serialize();
+  var that = this;
+  $.ajax({
+    url: that.form.action,
+    type: 'DELETE',
+    data: formData,
+    success: function () {
+      $(that).attr('value','Unfriended');
+      $(that).closest("div[class='userform friended']").toggleClass('unfriended');
+      $(that).closest("div[class='userform friended unfriended']").toggleClass('friended');
+      $(that).removeAttr('disabled');
+      $(that).attr('value','Unfriend');
+    }
+  });
+}
 );
 </script>

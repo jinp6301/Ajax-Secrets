@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style type="text/css">
+
+  .userform.friended .friend{
+    visibility: hidden;
+  }
+
+  .userform.unfriended .unfriend{
+    visibility: hidden;
+  }
+
+  </style>
   <title>AjaxDemo</title>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
