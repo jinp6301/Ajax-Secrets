@@ -1,0 +1,32 @@
+<% @users.each do |user| %>
+<form id="user1form">
+  <label for="friend"><%= user.username %></label>
+  <input type="hidden" name="friendship[user_id]" value="<%= current_user.id %>">
+  <input type="hidden" name="friendship[friend_id]" value="<%= user.id %>">
+  <input type="submit" value="Friend">
+</form>
+<% end %>
+
+<p>
+
+<script>
+  $("#user1form").find('input[type="submit"]').on(
+  "click",
+  function (event) {
+    event.preventDefault();
+    $(this).attr('disabled','disabled');
+    $(this).attr('value','Friending...');
+    $(this).fadeTo(400, 0.5)
+    var formData = $(this.form).serialize();
+    var that = this;
+    $.ajax({
+      url: "<%= user_friendship_url(current_user.id) %>",
+      type: "POST",
+      data: formData,
+      success: function () {
+        $(that).attr('value','Friended');
+      }
+    });
+  }
+);
+</script>
