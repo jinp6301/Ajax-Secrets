@@ -6,10 +6,12 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
+    @friends = current_user.friends
   end
 
   def show
     @user = User.find(params[:id])
+    @tags = Tag.all
   end
 
   def index

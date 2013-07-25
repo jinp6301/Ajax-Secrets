@@ -1,58 +1,42 @@
 <% @users.each do |user| %>
 
-<div class="userform <%= user.friends.include?(current_user) ? "friended" : "unfriended" %>">
-<form action="<%= user_friendship_url(user.id) %>" method="post">
-  <label for="friend"><%= user.username %></label>
-  <input type="submit" value="Friend" class="friend">
+<% included = @friends ? @friends.include?(user) : nil %>
+
+<div class="userform <%= included ? "friended" : "unfriended" %>">
+  <%= user.username %>
+<form action="<%= user_friendship_url(user) %>" class="friend <%= included ? "hidden" : "" %>">
+  <input type="submit" value="friend" class="friend">
 </form>
-<form action="<%= user_friendship_url(user.id) %>">
-  <input type="submit" value="Unfriend" class="unfriend">
+<form action="<%= user_friendship_url(user) %>" class="unfriend <%= included ? "" : "hidden" %>">
+  <input type="submit" value="unfriend" class="unfriend">
 </form>
 </div>
-<br>
+
 <% end %>
 
-<p>
-
 <script>
-$(".userform").on("click", "input[class='friend']", undefined, function(event){
-  event.preventDefault();
-  $(this).attr('disabled','disabled');
-  $(this).attr('value','Friending...');
-  var formData = $(this.form).serialize();
-  var that = this;
-  $.ajax({
-    url: that.form.action,
-    type: 'POST',
-    data: formData,
-    success: function () {
-      $(that).attr('value','Friended');
-      $(that).closest("div[class='userform unfriended']").toggleClass('friended');
-      $(that).closest("div[class='userform unfriended friended']").toggleClass('unfriended');
-      $(that).removeAttr('disabled');
-      $(that).attr('value','Friend');
-    }
-  });
+var friendings = function(friendToggle, oppFriend){
+  $(".userform").on("click", "input." + friendToggle, function(event){
+    event.preventDefault();
+    $(this).attr('disabled','disabled');
+    $(this).attr('value', friendToggle + 'ing...');
+    var formData = $(this.form).serialize();
+    var that = this;
+    $.ajax({
+      url: that.form.action + ".json",
+      type: friendToggle === "friend" ? "POST" : "DELETE",
+      data: formData,
+      success: function () {
+        $(that.form).toggleClass('hidden');
+        $(that.form).siblings("." + oppFriend).toggleClass('hidden');
+        $(that).removeAttr('disabled');
+        $(that).attr('value', friendToggle);
+      }
+    });
+  }
+  );
 }
-);
-$(".userform").on("click", "input[class='unfriend']", undefined, function(event){
-  event.preventDefault();
-  $(this).attr('disabled','disabled');
-  $(this).attr('value','Unfriending...');
-  var formData = $(this.form).serialize();
-  var that = this;
-  $.ajax({
-    url: that.form.action,
-    type: 'DELETE',
-    data: formData,
-    success: function () {
-      $(that).attr('value','Unfriended');
-      $(that).closest("div[class='userform friended']").toggleClass('unfriended');
-      $(that).closest("div[class='userform friended unfriended']").toggleClass('friended');
-      $(that).removeAttr('disabled');
-      $(that).attr('value','Unfriend');
-    }
-  });
-}
-);
+
+friendings('friend', 'unfriend');
+friendings('unfriend', 'friend');
 </script>

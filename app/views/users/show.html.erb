@@ -1,6 +1,6 @@
 <h1><%= @user.username %></h1>
 
-<%= render "secrets/form" %>
+<%= render partial: "secrets/form", locals: {tags: @tags} %>
 
 <ul>
   <% @user.received_secrets.reverse.each do |secret| %>
@@ -10,7 +10,7 @@
 
 <script>
 
-$(".newsecret").on("click", "input[type='submit']", function(event) {
+$(".newsecret").on("click", "input[class='creation']", function(event) {
   event.preventDefault();
   var formData = $(this.form).serialize();
   var that = this;
@@ -20,14 +20,12 @@ $(".newsecret").on("click", "input[type='submit']", function(event) {
     data: formData,
     success: function() {
       var secretFormTitle = $(that).siblings("input[type='text']");
-      $("ul").prepend("<li>" + secretFormTitle.val() + "</li>");
+      $("ul").prepend("<li style='display:none'>" + secretFormTitle.val() + "</li>");
+      $("ul li").slideDown();
       secretFormTitle.val('')
     }
-  })
-}
-
-
-)
+  });
+});
 
 
 

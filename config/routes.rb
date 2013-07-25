@@ -7,4 +7,6 @@ AjaxDemo::Application.routes.draw do
     resource :friendship, only: [:create, :destroy]
   end
 
+  resource :tags, only: [:new, :create]
+
 end
